@@ -49,6 +49,11 @@ impl Application for YourApp {
         &mut self.core
     }
 
+    /// This is the header of your application, it can be used to display the title of your application.
+    fn header_center(&self) -> Vec<Element<Self::Message>> {
+        vec![widget::text::text(fl!("app-title")).into()]
+    }
+
     /// This is the entry point of your application, it is where you initialize your application.
     ///
     /// Any work that needs to be done before the application starts should be done here.
