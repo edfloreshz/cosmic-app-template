@@ -1,0 +1,1 @@
+welcome = Bienvenido a COSMIC! ✨

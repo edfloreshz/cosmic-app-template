@@ -7,6 +7,8 @@ use cosmic::{
     widget, Application, Element,
 };
 
+use crate::fl;
+
 /// This is the struct that represents your application.
 /// It is used to define the data that will be used by your application.
 #[derive(Clone, Default)]
@@ -67,7 +69,7 @@ impl Application for YourApp {
     ///
     /// To get a better sense of which widgets are available, check out the `widget` module.
     fn view(&self) -> Element<Self::Message> {
-        widget::container(widget::text::title1("Welcome to COSMIC! ✨"))
+        widget::container(widget::text::title1(fl!("welcome")))
             .width(Length::Fill)
             .height(Length::Fill)
             .align_x(Horizontal::Center)
