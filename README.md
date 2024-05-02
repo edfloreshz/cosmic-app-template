@@ -1,3 +1,5 @@
+![cosmic](assets/img/kate-hazen-COSMIC-desktop-wallpaper.png)
+
 # COSMIC Application Template
 
 A template for COSMIC applications.
