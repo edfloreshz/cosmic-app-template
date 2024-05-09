@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=COSMIC App Template
+Exec=cosmic-app-template %F
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=com.example.CosmicAppTemplate
+Categories=COSMIC;Utility;
+Keywords=Folder;Manager;
+MimeType=inode/directory;
