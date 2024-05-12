@@ -1,13 +1,10 @@
-use cosmic::{
-    app::{self, Core},
-    iced::{
-        alignment::{Horizontal, Vertical},
-        Command, Length,
-    },
-    widget, Application, Element,
-};
+// SPDX-License-Identifier: GPL-3.0-only
 
 use crate::fl;
+use cosmic::app::{Command, Core};
+use cosmic::iced::alignment::{Horizontal, Vertical};
+use cosmic::iced::Length;
+use cosmic::{widget, Application, Element};
 
 /// This is the struct that represents your application.
 /// It is used to define the data that will be used by your application.
@@ -51,7 +48,7 @@ impl Application for YourApp {
 
     /// This is the header of your application, it can be used to display the title of your application.
     fn header_center(&self) -> Vec<Element<Self::Message>> {
-        vec![widget::text::text(fl!("app-title")).into()]
+        vec![widget::text::heading(fl!("app-title")).into()]
     }
 
     /// This is the entry point of your application, it is where you initialize your application.
@@ -61,7 +58,7 @@ impl Application for YourApp {
     /// - `core` is used to passed on for you by libcosmic to use in the core of your own application.
     /// - `flags` is used to pass in any data that your application needs to use before it starts.
     /// - `Command` type is used to send messages to your application. `Command::none()` can be used to send no messages to your application.
-    fn init(core: Core, _flags: Self::Flags) -> (Self, Command<app::Message<Self::Message>>) {
+    fn init(core: Core, _flags: Self::Flags) -> (Self, Command<Self::Message>) {
         let example = YourApp { core };
 
         (example, Command::none())
