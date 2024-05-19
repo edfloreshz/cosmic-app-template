@@ -74,7 +74,7 @@ impl menu::action::MenuAction for MenuAction {
 /// This is where you define the behavior of your application.
 ///
 /// The `Application` trait requires you to define the following types and constants:
-/// - `Executor` is the executor that will be used to run your application.
+/// - `Executor` is the async executor that will be used to run your application's commands.
 /// - `Flags` is the data that your application needs to use before it starts.
 /// - `Message` is the enum that contains all the possible variants that your application will need to transmit messages.
 /// - `APP_ID` is the unique identifier of your application.
