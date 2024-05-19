@@ -4,15 +4,16 @@ use crate::fl;
 use cosmic::app::{Command, Core};
 use cosmic::iced::alignment::{Horizontal, Vertical};
 use cosmic::iced::Length;
-use cosmic::{widget, Application, Element};
+use cosmic::widget::{self, icon, nav_bar};
+use cosmic::{Application, ApplicationExt, Apply, Element};
 
 /// This is the struct that represents your application.
 /// It is used to define the data that will be used by your application.
-#[derive(Clone, Default)]
 pub struct YourApp {
-    /// This is the core of your application, it is used to communicate with the Cosmic runtime.
-    /// It is used to send messages to your application, and to access the resources of the Cosmic runtime.
+    /// Application state which is managed by the COSMIC runtime.
     core: Core,
+    /// A model that contains all of the pages assigned to the nav bar panel.
+    nav: nav_bar::Model,
 }
 
 /// This is the enum that contains all the possible variants that your application will need to transmit messages.
@@ -20,6 +21,13 @@ pub struct YourApp {
 /// If your application does not need to send messages, you can use an empty enum or `()`.
 #[derive(Debug, Clone)]
 pub enum Message {}
+
+/// Identifies a page in the application.
+pub enum Page {
+    Page1,
+    Page2,
+    Page3,
+}
 
 /// Implement the `Application` trait for your application.
 /// This is where you define the behavior of your application.
@@ -46,9 +54,9 @@ impl Application for YourApp {
         &mut self.core
     }
 
-    /// This is the header of your application, it can be used to display the title of your application.
-    fn header_center(&self) -> Vec<Element<Self::Message>> {
-        vec![widget::text::heading(fl!("app-title")).into()]
+    // Instructs the cosmic runtime to use this model as the nav bar model.
+    fn nav_model(&self) -> Option<&nav_bar::Model> {
+        Some(&self.nav)
     }
 
     /// This is the entry point of your application, it is where you initialize your application.
@@ -59,9 +67,29 @@ impl Application for YourApp {
     /// - `flags` is used to pass in any data that your application needs to use before it starts.
     /// - `Command` type is used to send messages to your application. `Command::none()` can be used to send no messages to your application.
     fn init(core: Core, _flags: Self::Flags) -> (Self, Command<Self::Message>) {
-        let example = YourApp { core };
+        let mut nav = nav_bar::Model::default();
 
-        (example, Command::none())
+        nav.insert()
+            .text("Page 1")
+            .data::<Page>(Page::Page1)
+            .icon(icon::from_name("applications-science-symbolic"))
+            .activate();
+
+        nav.insert()
+            .text("Page 2")
+            .data::<Page>(Page::Page2)
+            .icon(icon::from_name("applications-system-symbolic"));
+
+        nav.insert()
+            .text("Page 3")
+            .data::<Page>(Page::Page3)
+            .icon(icon::from_name("applications-games-symbolic"));
+
+        let mut app = YourApp { core, nav };
+
+        let command = app.update_titles();
+
+        (app, command)
     }
 
     /// This is the main view of your application, it is the root of your widget tree.
@@ -71,11 +99,41 @@ impl Application for YourApp {
     ///
     /// To get a better sense of which widgets are available, check out the `widget` module.
     fn view(&self) -> Element<Self::Message> {
-        widget::container(widget::text::title1(fl!("welcome")))
+        widget::text::title1(fl!("welcome"))
+            .apply(widget::container)
             .width(Length::Fill)
             .height(Length::Fill)
             .align_x(Horizontal::Center)
             .align_y(Vertical::Center)
             .into()
+    }
+
+    fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
+        Command::none()
+    }
+
+    /// Called when a nav item is selected.
+    fn on_nav_select(&mut self, id: nav_bar::Id) -> Command<Self::Message> {
+        // Activate the page in the model.
+        self.nav.activate(id);
+
+        self.update_titles()
+    }
+}
+
+impl YourApp {
+    /// Updates the header and window titles.
+    pub fn update_titles(&mut self) -> Command<Message> {
+        let mut window_title = fl!("app-title");
+        let mut header_title = String::new();
+
+        if let Some(page) = self.nav.text(self.nav.active()) {
+            window_title.push_str(" — ");
+            window_title.push_str(page);
+            header_title.push_str(page);
+        }
+
+        self.set_header_title(header_title);
+        self.set_window_title(window_title)
     }
 }
