@@ -1,17 +1,25 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+use std::collections::HashMap;
+
 use crate::fl;
 use cosmic::app::{Command, Core};
 use cosmic::iced::alignment::{Horizontal, Vertical};
-use cosmic::iced::Length;
-use cosmic::widget::{self, icon, nav_bar};
-use cosmic::{Application, ApplicationExt, Apply, Element};
+use cosmic::iced::{Alignment, Length};
+use cosmic::widget::{self, icon, menu, nav_bar};
+use cosmic::{cosmic_theme, theme, Application, ApplicationExt, Apply, Element};
+
+const REPOSITORY: &str = "https://github.com/edfloreshz/cosmic-app-template";
 
 /// This is the struct that represents your application.
 /// It is used to define the data that will be used by your application.
 pub struct YourApp {
     /// Application state which is managed by the COSMIC runtime.
     core: Core,
+    /// Display a context drawer with the designated page if defined.
+    context_page: ContextPage,
+    /// Key bindings for the application's menu bar.
+    key_binds: HashMap<menu::KeyBind, MenuAction>,
     /// A model that contains all of the pages assigned to the nav bar panel.
     nav: nav_bar::Model,
 }
@@ -20,13 +28,46 @@ pub struct YourApp {
 /// This is used to communicate between the different parts of your application.
 /// If your application does not need to send messages, you can use an empty enum or `()`.
 #[derive(Debug, Clone)]
-pub enum Message {}
+pub enum Message {
+    LaunchUrl(String),
+    ToggleContextPage(ContextPage),
+}
 
 /// Identifies a page in the application.
 pub enum Page {
     Page1,
     Page2,
     Page3,
+}
+
+/// Identifies a context page to display in the context drawer.
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
+pub enum ContextPage {
+    #[default]
+    About,
+}
+
+impl ContextPage {
+    fn title(&self) -> String {
+        match self {
+            Self::About => fl!("about"),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MenuAction {
+    About,
+}
+
+impl menu::action::MenuAction for MenuAction {
+    type Message = Message;
+
+    fn message(&self) -> Self::Message {
+        match self {
+            MenuAction::About => Message::ToggleContextPage(ContextPage::About),
+        }
+    }
 }
 
 /// Implement the `Application` trait for your application.
@@ -54,7 +95,7 @@ impl Application for YourApp {
         &mut self.core
     }
 
-    // Instructs the cosmic runtime to use this model as the nav bar model.
+    /// Instructs the cosmic runtime to use this model as the nav bar model.
     fn nav_model(&self) -> Option<&nav_bar::Model> {
         Some(&self.nav)
     }
@@ -85,11 +126,29 @@ impl Application for YourApp {
             .data::<Page>(Page::Page3)
             .icon(icon::from_name("applications-games-symbolic"));
 
-        let mut app = YourApp { core, nav };
+        let mut app = YourApp {
+            core,
+            context_page: ContextPage::default(),
+            key_binds: HashMap::new(),
+            nav,
+        };
 
         let command = app.update_titles();
 
         (app, command)
+    }
+
+    /// Elements to pack at the start of the header bar.
+    fn header_start(&self) -> Vec<Element<Self::Message>> {
+        let menu_bar = menu::bar(vec![menu::Tree::with_children(
+            menu::root(fl!("view")),
+            menu::items(
+                &self.key_binds,
+                vec![menu::Item::Button(fl!("about"), MenuAction::About)],
+            ),
+        )]);
+
+        vec![menu_bar.into()]
     }
 
     /// This is the main view of your application, it is the root of your widget tree.
@@ -108,8 +167,41 @@ impl Application for YourApp {
             .into()
     }
 
+    /// Application messages are handled here. The application state can be modified based on
+    /// what message was received. Commands may be returned for asynchronous execution on a
+    /// background thread managed by the application's executor.
     fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
+        match message {
+            Message::LaunchUrl(url) => {
+                let _result = open::that_detached(url);
+            }
+
+            Message::ToggleContextPage(context_page) => {
+                if self.context_page == context_page {
+                    // Close the context drawer if the toggled context page is the same.
+                    self.core.window.show_context = !self.core.window.show_context;
+                } else {
+                    // Open the context drawer to display the requested context page.
+                    self.context_page = context_page;
+                    self.core.window.show_context = true;
+                }
+
+                // Set the title of the context drawer.
+                self.set_context_title(context_page.title());
+            }
+        }
         Command::none()
+    }
+
+    /// Display a context drawer if the context page is requested.
+    fn context_drawer(&self) -> Option<Element<Self::Message>> {
+        if !self.core.window.show_context {
+            return None;
+        }
+
+        Some(match self.context_page {
+            ContextPage::About => self.about(),
+        })
     }
 
     /// Called when a nav item is selected.
@@ -122,6 +214,30 @@ impl Application for YourApp {
 }
 
 impl YourApp {
+    /// The about page for this app.
+    pub fn about(&self) -> Element<Message> {
+        let cosmic_theme::Spacing { space_xxs, .. } = theme::active().cosmic().spacing;
+
+        let icon = widget::svg(widget::svg::Handle::from_memory(
+            &include_bytes!("../res/icons/hicolor/128x128/apps/com.example.CosmicAppTemplate.svg")
+                [..],
+        ));
+
+        let title = widget::text::title3(fl!("app-title"));
+
+        let link = widget::button::link(REPOSITORY)
+            .on_press(Message::LaunchUrl(REPOSITORY.to_string()))
+            .padding(0);
+
+        widget::column()
+            .push(icon)
+            .push(title)
+            .push(link)
+            .align_items(Alignment::Center)
+            .spacing(space_xxs)
+            .into()
+    }
+
     /// Updates the header and window titles.
     pub fn update_titles(&mut self) -> Command<Message> {
         let mut window_title = fl!("app-title");
