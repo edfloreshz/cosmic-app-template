@@ -28,3 +28,18 @@ After you install it, you can run the following commands to build and install yo
 just build-release
 sudo just install
 ```
+
+## Publish
+
+To create a `.deb` package you'll need to install `cargo-deb` if you haven't already.
+```sh
+cargo install cargo-deb
+```
+
+Then you can create a `.deb` package for your application with:
+```sh
+just debpkg
+```
+
+With cargo `cargo-deb` your package configuration is in `Cargo.toml` in the `[package.metadata.deb]` section.
+Since TOML doesn't really support variables you have to update everything manually (for now).
