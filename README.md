@@ -31,6 +31,8 @@ sudo just install
 
 ## Publish
 
+### Debian Package
+
 To create a `.deb` package you'll need to install `cargo-deb` if you haven't already.
 ```sh
 cargo install cargo-deb
@@ -42,4 +44,27 @@ just debpkg
 ```
 
 With cargo `cargo-deb` your package configuration is in `Cargo.toml` in the `[package.metadata.deb]` section.
+For more information on how to configure the `.deb` package refer to the [cargo-deb documentation](https://docs.rs/cargo-deb/2.2.0/cargo_deb/)
 Since TOML doesn't really support variables you have to update everything manually (for now).
+
+### Flatpak
+
+To create a Flatpak package you'll need to install `flatpak-builder` and `flatpak` if you haven't already.
+For example, on Pop! OS (and most ubuntu based distro):
+```sh
+sudo apt install flatpak-builder flatpak
+```
+
+You'll also need the Platforms and SDKs you want to use, in the example the preset uses the Freedesktop ones.
+```sh
+ flatpak install flathub org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08    
+```
+
+Then you can create a Flatpak package for your application with:
+```sh
+just flatpak
+```
+
+This will result in a `.flatpak` file in the `dist` folder. That you can distribute as Artifact,
+if you want to publish it to a repository like Flathub you can reuse the `flatpak.mainfest.yml`.
+Reference the [Flatpak documentation](https://docs.flatpak.org/en/latest/) for more information.
