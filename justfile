@@ -1,4 +1,5 @@
 name := 'cosmic-app-template'
+name-camel := 'CosmicAppTemplate'
 export APPID := 'com.example.CosmicAppTemplate'
 
 rootdir := ''
@@ -74,16 +75,18 @@ install:
     done
 
 # Installs files
-flatpak:
-    install -Dm0755 {{bin-src}} {{flatpak-bin-dst}}
-    install -Dm0644 {{desktop-src}} {{desktop-dst}}
-    install -Dm0644 {{metainfo-src}} {{metainfo-dst}}
-    for size in `ls {{icons-src}}`; do \
-        install -Dm0644 "{{icons-src}}/$size/apps/{{APPID}}.svg" "{{icons-dst}}/$size/apps/{{APPID}}.svg"; \
-    done
+flatpak: build-release
+    flatpak-builder ./build ./res/flatpak.mainifest.yml --force-clean --repo=export
+    flatpak build-bundle export {{name-camel}}.flatpak {{APPID}} --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
+    rm -rf build
+    rm -rf export
+    mkdir -p dist
+    mv {{name-camel}}.flatpak dist/
     
 debpkg: build-release
     cargo deb --no-build
+    mkdir -p dist
+    mv target/debian/{{name}}_*.deb dist/
 
 # Uninstalls installed files
 uninstall:

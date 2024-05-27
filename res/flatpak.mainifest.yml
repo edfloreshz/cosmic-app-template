@@ -1,0 +1,16 @@
+id: com.example.CosmicAppTemplate
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+command: cosmic-app-template
+modules:
+  - name: cosmic-app-template
+    buildsystem: simple
+    build-commands:
+      - install -D cosmic-app-template /app/bin/cosmic-app-template
+      - install -D com.example.CosmicAppTemplate.desktop /app/share/applications/com.example.CosmicAppTemplate.desktop
+    sources:
+      - type: file
+        path: ../target/release/cosmic-app-template
+      - type: file
+        path: com.example.CosmicAppTemplate.desktop
