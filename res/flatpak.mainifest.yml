@@ -9,8 +9,11 @@ modules:
     build-commands:
       - install -D cosmic-app-template /app/bin/cosmic-app-template
       - install -D com.example.CosmicAppTemplate.desktop /app/share/applications/com.example.CosmicAppTemplate.desktop
+      - install -D com.example.CosmicAppTemplate.metainfo.xml /app/share/metainfo/com.example.CosmicAppTemplate.metainfo.xml
     sources:
       - type: file
         path: ../target/release/cosmic-app-template
       - type: file
         path: com.example.CosmicAppTemplate.desktop
+      - type: file
+        path: com.example.CosmicAppTemplate.metainfo.xml
