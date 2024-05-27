@@ -81,6 +81,9 @@ flatpak:
     for size in `ls {{icons-src}}`; do \
         install -Dm0644 "{{icons-src}}/$size/apps/{{APPID}}.svg" "{{icons-dst}}/$size/apps/{{APPID}}.svg"; \
     done
+    
+debpkg: build-release
+    cargo deb --no-build
 
 # Uninstalls installed files
 uninstall:
