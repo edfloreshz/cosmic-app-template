@@ -25,3 +25,23 @@ features = ["fluent-system", "desktop-requester"]
 # libcosmic = { path = "../libcosmic" }
 # cosmic-config = { path = "../libcosmic/cosmic-config" }
 # cosmic-theme = { path = "../libcosmic/cosmic-theme" }
+
+# Cargo deb
+# Edit here to customize the package metadata
+# Especially the Assets section
+[package.metadata.deb]
+maintainer = "Your Name, <your@email.com>"
+copyright = "2024 Your Name"
+# license-file = "LICENSE"
+extended-description = """\
+Describe your app here. \
+"""
+depends = "$auto"
+section = "utility"
+priority = "optional"
+assets = [
+    ["target/release/cosmic-app-template", "usr/bin/cosmic-app-template", "755"],
+    ["res/com.example.CosmicAppTemplate.metainfo.xml", "usr/share/metainfo/com.example.CosmicAppTemplate.metainfo.xml", "644"],
+    ["res/com.example.CosmicAppTemplate.desktop", "usr/share/applications/com.example.CosmicAppTemplate.desktop", "644"],
+#    ["res/icons/hicolor/", "usr/share/icons/hicolor/", "644"]
+]
