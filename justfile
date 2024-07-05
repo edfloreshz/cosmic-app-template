@@ -85,6 +85,8 @@ flatpak:
 # Uninstalls installed files
 uninstall:
     rm {{bin-dst}}
+    rm {{desktop-dst}}
+    rm {{metainfo-dst}}
 
 # Vendor dependencies locally
 vendor:
