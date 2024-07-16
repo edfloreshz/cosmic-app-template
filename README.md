@@ -29,6 +29,12 @@ just build-release
 sudo just install
 ```
 
+To uninstall simply run
+
+```sh
+sudo just uninstall
+```
+
 ## Publish
 
 To create a `.deb` package you'll need to install `cargo-deb` if you haven't already.
